@@ -1,0 +1,155 @@
+<div class="p-4 sm:p-6 bg-white rounded-2xl shadow-md w-full max-w-full lg:max-w-6xl mx-auto mt-30">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+    <h1 class="text-xl sm:text-2xl font-bold text-indigo-800 text-left">Estudiantes</h1>
+    <button mat-flat-button color="primary" (click)="abrirModalNuevo()">+ Nuevo</button>
+  </div>
+
+  <div class="overflow-x-auto rounded-lg">
+    <table mat-table [dataSource]="estudiantes" class="min-w-[800px] w-full" matSort>
+
+      <!-- ID -->
+      <ng-container matColumnDef="idPersona">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.idPersona }}</td>
+      </ng-container>
+
+      <!-- Nombre -->
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.nombre }}</td>
+      </ng-container>
+
+      <!-- Apellido -->
+      <ng-container matColumnDef="apellido">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellido</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.apellido }}</td>
+      </ng-container>
+
+      <!-- Fecha de Nacimiento -->
+      <ng-container matColumnDef="fechaNacimiento">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Nac.</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.fechaNacimiento | date:'yyyy-MM-dd' }}</td>
+      </ng-container>
+
+      <!-- Email -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.email }}</td>
+      </ng-container>
+
+      <!-- Teléfono -->
+      <ng-container matColumnDef="telefono">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.telefono }}</td>
+      </ng-container>
+
+      <!-- Número de Matrícula -->
+      <ng-container matColumnDef="numeroMatricula">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Número Matrícula</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.numeroMatricula }}</td>
+      </ng-container>
+
+      <!-- Grado -->
+      <ng-container matColumnDef="grado">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Grado</th>
+        <td mat-cell *matCellDef="let estudiante">{{ estudiante.grado }}</td>
+      </ng-container>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let estudiante">
+          <button mat-icon-button (click)="editarEstudiante(estudiante)" matTooltip="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="abrirModalEliminar(estudiante)" matTooltip="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnas;"></tr>
+    </table>
+  </div>
+
+  <!-- Modal Nuevo o Editar -->
+  <ng-template #modalNuevo>
+    <h2 mat-dialog-title>{{ editando ? 'Editar Estudiante' : 'Nuevo Estudiante' }}</h2>
+    <mat-dialog-content class="mat-dialog-container">
+      <form [formGroup]="formNuevoEstudiante" (ngSubmit)="guardarNuevoEstudiante()" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" />
+            <mat-error *ngIf="campoInvalido('nombre')">El nombre es obligatorio.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Apellido</mat-label>
+            <input matInput formControlName="apellido" />
+            <mat-error *ngIf="campoInvalido('apellido')">El apellido es obligatorio.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" />
+            <mat-error *ngIf="campoInvalido('email')">
+              <div *ngIf="formNuevoEstudiante.get('email')?.errors?.['required']">El email es obligatorio.</div>
+              <div *ngIf="formNuevoEstudiante.get('email')?.errors?.['email']">El email no es válido.</div>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="telefono" />
+            <mat-error *ngIf="campoInvalido('telefono')">
+              <div *ngIf="formNuevoEstudiante.get('telefono')?.errors?.['required']">El teléfono es obligatorio.</div>
+              <div *ngIf="formNuevoEstudiante.get('telefono')?.errors?.['pattern']">Debe tener 10 dígitos numéricos.</div>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Fecha de Nacimiento</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="campoInvalido('fechaNacimiento')">
+              <div *ngIf="formNuevoEstudiante.get('fechaNacimiento')?.errors?.['required']">Obligatoria.</div>
+              <div *ngIf="formNuevoEstudiante.get('fechaNacimiento')?.errors?.['edadMinima']">Debe tener al menos 4 años.</div>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Número de Matrícula</mat-label>
+            <input matInput formControlName="numeroMatricula" />
+            <mat-error *ngIf="campoInvalido('numeroMatricula')">Obligatorio.</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Grado</mat-label>
+            <input matInput formControlName="grado" />
+            <mat-error *ngIf="campoInvalido('grado')">Obligatorio.</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-dialog-actions align="end">
+          <button mat-button type="button" (click)="cerrarModalNuevo()">Cancelar</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="formNuevoEstudiante.invalid">Guardar</button>
+        </mat-dialog-actions>
+      </form>
+    </mat-dialog-content>
+  </ng-template>
+
+  <!-- Modal eliminar -->
+  <ng-template #modalEliminar>
+    <h2 mat-dialog-title>Confirmar eliminación</h2>
+    <mat-dialog-content>
+      ¿Estás seguro de eliminar a <strong>{{ estudianteSeleccionado?.nombre }} {{ estudianteSeleccionado?.apellido }}</strong>?
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button (click)="cerrarModalEliminar()">Cancelar</button>
+      <button mat-flat-button color="warn" (click)="eliminarEstudiante()">Sí, eliminar</button>
+    </mat-dialog-actions>
+  </ng-template>
+</div>

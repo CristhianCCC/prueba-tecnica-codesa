@@ -1,0 +1,17 @@
+mat-dialog-content {
+  max-height: 60vh;   
+  overflow-y: auto;    
+}
+
+/**
+* para que el contenedor del modal tenga una altura especifica y no haya necesidad de scrollear
+*/
+.mat-dialog-container {
+  max-height: 90vh;    
+  display: flex;
+  flex-direction: column;
+}
+
+mat-dialog-actions {
+  flex-shrink: 0;  
+}
