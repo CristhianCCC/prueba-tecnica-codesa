@@ -137,15 +137,16 @@
           </mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="w-full sm:col-span-2">
-          <mat-label>Fecha de Nacimiento</mat-label>
-          <input matInput [matDatepicker]="pickerNacimiento" formControlName="fechaNacimiento" />
-          <mat-datepicker-toggle matSuffix [for]="pickerNacimiento"></mat-datepicker-toggle>
-          <mat-datepicker #pickerNacimiento></mat-datepicker>
-          <mat-error *ngIf="formProfesor.get('fechaNacimiento')?.hasError('required')">
-            La fecha de nacimiento es obligatoria.
-          </mat-error>
-        </mat-form-field>
+        <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Fecha de Nacimiento</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="campoInvalido('fechaNacimiento')">
+              <div *ngIf="formProfesor.get('fechaNacimiento')?.errors?.['required']">Obligatoria.</div>
+              <div *ngIf="formProfesor.get('fechaNacimiento')?.errors?.['edadMinima']">Debe tener al menos 18 años.</div>
+            </mat-error>
+          </mat-form-field>
 
       </form>
     </mat-dialog-content>

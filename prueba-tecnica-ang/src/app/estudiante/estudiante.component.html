@@ -110,17 +110,6 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="w-full">
-            <mat-label>Fecha de Nacimiento</mat-label>
-            <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            <mat-error *ngIf="campoInvalido('fechaNacimiento')">
-              <div *ngIf="formNuevoEstudiante.get('fechaNacimiento')?.errors?.['required']">Obligatoria.</div>
-              <div *ngIf="formNuevoEstudiante.get('fechaNacimiento')?.errors?.['edadMinima']">Debe tener al menos 4 años.</div>
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="w-full">
             <mat-label>Número de Matrícula</mat-label>
             <input matInput formControlName="numeroMatricula" />
             <mat-error *ngIf="campoInvalido('numeroMatricula')">Obligatorio.</mat-error>
@@ -132,6 +121,18 @@
             <mat-error *ngIf="campoInvalido('grado')">Obligatorio.</mat-error>
           </mat-form-field>
         </div>
+
+
+        <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Fecha de Nacimiento</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error *ngIf="campoInvalido('fechaNacimiento')">
+              <div *ngIf="formNuevoEstudiante.get('fechaNacimiento')?.errors?.['required']">Obligatoria.</div>
+              <div *ngIf="formNuevoEstudiante.get('fechaNacimiento')?.errors?.['edadMinima']">Debe tener al menos 4 años.</div>
+            </mat-error>
+          </mat-form-field>
 
         <mat-dialog-actions align="end">
           <button mat-button type="button" (click)="cerrarModalNuevo()">Cancelar</button>

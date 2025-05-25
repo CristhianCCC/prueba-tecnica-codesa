@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Profesor } from '../models/Profesor';
 
 import { MatTableModule } from '@angular/material/table';
@@ -70,12 +70,17 @@ export class ProfesoresComponent implements OnInit {
       idPersona: [null],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       fechaContratacion: ['', Validators.required],
+      fechaNacimiento: ['', [Validators.required, this.edadMinimaValidator(18)]],
       especialidad: ['', Validators.required],
     });
+  }
+
+  campoInvalido(campo: string): boolean {
+    const control = this.formProfesor.get(campo);
+    return !!(control && control.invalid && (control.dirty || control.touched));
   }
 
   abrirModalNuevo() {
@@ -140,4 +145,22 @@ export class ProfesoresComponent implements OnInit {
   cerrarModalEliminar() {
     this.dialog.closeAll();
   }
+
+// validando edad minima, si el estudiante es menor a 18 años muestra un error
+  edadMinimaValidator(minEdad: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const fecha = control.value;
+      if (!fecha) return null;
+      const hoy = new Date();
+      const fechaNacimiento = new Date(fecha);
+      const edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+      const mes = hoy.getMonth() - fechaNacimiento.getMonth();
+      if (mes < 0 || (mes === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+        // Resta un año si no ha cumplido aún este año
+        return edad - 1 >= minEdad ? null : { edadMinima: true };
+      }
+      return edad >= minEdad ? null : { edadMinima: true };
+    };
+  }
+
 }
